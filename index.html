@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Portfolio | Unity & Godot</title>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --red: #ff3e3e; 
+            --green: #00ff66;
+            --text: #ffffff;
+            --card-bg: rgba(15, 15, 15, 0.9);
+        }
+
+        /* --- CRT EFFECT --- */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 10000;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* --- HIDE DEFAULT CURSOR --- */
+        * { cursor: none !important; }
+
+        body {
+            background: linear-gradient(-45deg, #0a0a0a, #1a0505, #051a05, #0a0a0a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- CROSSHAIR STYLE --- */
+        #crosshair {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--green);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 20000;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.2s, transform 0.1s ease-out;
+        }
+        #crosshair::after, #crosshair::before {
+            content: '';
+            position: absolute;
+            background: var(--red);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #crosshair::before { width: 10px; height: 2px; }
+        #crosshair::after { width: 2px; height: 10px; }
+
+        .active-reticle #crosshair {
+            border-color: var(--red);
+            width: 45px;
+            height: 45px;
+            animation: rotateReticle 1s linear infinite;
+        }
+
+        @keyframes rotateReticle {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(90deg); }
+        }
+
+        canvas#particleCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            pointer-events: none;
+            z-index: 15000;
+        }
+
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        h1 { font-size: clamp(2.5rem, 8vw, 4rem); color: var(--red); letter-spacing: 8px; text-shadow: 0 0 10px var(--red); }
+        h2 { margin-bottom: 30px; letter-spacing: 4px; color: var(--green); border-bottom: 2px solid var(--red); }
+
+        .btn {
+            display: inline-block;
+            min-width: 240px;
+            padding: 15px 30px;
+            border: 2px solid var(--red);
+            color: var(--red);
+            text-decoration: none;
+            font-weight: 700;
+            background: rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 10002;
+        }
+        .btn:hover { background: var(--red); color: #000; box-shadow: 0 0 25px var(--red); }
+        .btn-green { border-color: var(--green); color: var(--green); }
+        .btn-green:hover { background: var(--green); color: #000; box-shadow: 0 0 25px var(--green); }
+
+        .card {
+            background: var(--card-bg);
+            padding: 40px;
+            border: 1px solid rgba(255, 62, 62, 0.4);
+            width: 85%;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .grid { display: flex; gap: 20px; }
+            .card { width: 350px; }
+        }
+    </style>
+</head>
+<body class="">
+
+    <div id="crosshair"></div>
+    <canvas id="particleCanvas"></canvas>
+
+    <section>
+        <h1 class="glitch-scroll" data-aos="zoom-out">GAMEDEV_LOG</h1>
+        <div class="btn-container" data-aos="fade-up" data-aos-delay="400">
+            <a href="#projects" class="btn clickable">INITIALIZE_SYSTEM</a>
+        </div>
+    </section>
+
+    <section id="projects">
+        <h2 class="glitch-scroll">ACTIVE_BUILDS</h2>
+        <div class="grid">
+            <div class="card clickable" data-aos="flip-up">
+                <h3 style="color: var(--red);">Project Alpha</h3>
+                <p>Unity C# Implementation</p>
+            </div>
+            <div class="card clickable" data-aos="flip-up" data-aos-delay="200">
+                <h3 style="color: var(--green);">Project Beta</h3>
+                <p>Godot GDScript Logic</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2 class="glitch-scroll">CONNECT_SIGNAL</h2>
+        <a href="https://www.instagram.com/zrathamm?igsh=a2FodjdpcWNyb2Rp" target="_blank" class="btn clickable">Instagram</a>
+        <br><br>
+        <a href="https://discord.gg/wyhu2kVRJ" target="_blank" class="btn btn-green clickable">Discord</a>
+    </section>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1200 });
+
+        const crosshair = document.getElementById('crosshair');
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // --- CROSSHAIR & CLICK LOGIC ---
+        window.addEventListener('mousemove', (e) => {
+            crosshair.style.left = e.clientX + 'px';
+            crosshair.style.top = e.clientY + 'px';
+            spawnParticles(e.clientX, e.clientY, 1, false); // Trail
+        });
+
+        window.addEventListener('mousedown', (e) => {
+            spawnParticles(e.clientX, e.clientY, 15, true); // Explosion
+        });
+
+        // For Mobile Taps
+        window.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            crosshair.style.left = touch.clientX + 'px';
+            crosshair.style.top = touch.clientY + 'px';
+            spawnParticles(touch.clientX, touch.clientY, 15, true);
+        });
+
+        // Hover Effect for Crosshair
+        document.querySelectorAll('.clickable').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('active-reticle'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('active-reticle'));
+        });
+
+        class Particle {
+            constructor(x, y, isExplosion) {
+                this.x = x;
+                this.y = y;
+                this.size = isExplosion ? Math.random() * 6 + 2 : Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * (isExplosion ? 10 : 2);
+                this.speedY = (Math.random() - 0.5) * (isExplosion ? 10 : 2);
+                this.color = Math.random() > 0.5 ? '#ff3e3e' : '#00ff66';
+                this.opacity = 1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.02;
+            }
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        function spawnParticles(x, y, count, isExplosion) {
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(x, y, isExplosion));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles = particles.filter(p => p.opacity > 0);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- GLITCH SCROLL ---
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*@$";
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    let iteration = 0;
+                    const originalText = entry.target.innerText;
+                    const interval = setInterval(() => {
+                        entry.target.innerText = originalText.split("").map((l, i) => i < iteration ? originalText[i] : letters[Math.floor(Math.random() * 32)]).join("");
+                        if(iteration >= originalText.length) clearInterval(interval);
+                        iteration += 1/3;
+                    }, 30);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.glitch-scroll').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

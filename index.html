@@ -166,12 +166,12 @@
         <h2 class="glitch-scroll">ACTIVE_BUILDS</h2>
         <div class="grid">
             <div class="card clickable" data-aos="flip-up">
-                <h3 style="color: var(--red);">Project Alpha</h3>
-                <p>C# Physics Simulation</p>
+                <h3 style="color: var(--red);">VIRTUAL_REALM</h3>
+                <p>Unity C# Implementation</p>
             </div>
             <div class="card clickable" data-aos="flip-up" data-aos-delay="200">
-                <h3 style="color: var(--green);">Project Beta</h3>
-                <p>GDScript Shader Work</p>
+                <h3 style="color: var(--green);">NEURAL_ENGINE</h3>
+                <p>Godot GDScript Logic</p>
             </div>
         </div>
     </section>
@@ -187,17 +187,29 @@
     <script>
         AOS.init({ duration: 1200 });
 
-        // --- AUDIO ENGINE ---
-        // 'clickSound' uses your exact filename from GitHub
-        const clickSound = new Audio('https://github.com/hydradynamo781-sudo/Portfolio-/raw/refs/heads/main/683098__florianreichelt__click.mp3');
+        // --- AUDIO ENGINE (FIXED FOR MOBILE CHROME) ---
+        const clickSound = new Audio('https://raw.githubusercontent.com/hydradynamo781-sudo/Portfolio-/main/683098__florianreichelt__click.mp3');
         let isMuted = false;
+        let audioUnlocked = false;
 
         function playSFX(sound) {
             if(!isMuted && sound.src) {
                 sound.currentTime = 0;
-                sound.play().catch(e => console.log("Audio waiting for interaction"));
+                let playPromise = sound.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => console.log("Audio waiting for first touch..."));
+                }
             }
         }
+
+        // UNLOCK AUDIO ON FIRST TAP
+        window.addEventListener('touchstart', () => {
+            if(!audioUnlocked) {
+                clickSound.load();
+                audioUnlocked = true;
+                addLog("AUDIO_SYSTEM: ONLINE");
+            }
+        }, {once: true});
 
         document.getElementById('mute-toggle').addEventListener('click', () => {
             isMuted = !isMuted;
@@ -243,7 +255,7 @@
         // --- CLICK EXECUTION ---
         document.querySelectorAll('.clickable').forEach(el => {
             el.addEventListener('click', () => {
-                playSFX(clickSound); // TRIGGER THE SOUND HERE
+                playSFX(clickSound); 
                 addLog(`EXECUTING: ${el.innerText.slice(0, 15)}`);
             });
         });
@@ -256,7 +268,7 @@
         canvas.height = window.innerHeight;
 
         class Particle {
-            constructor(x, y, color, isBurst) {
+            constructor(x, y, color) {
                 this.x = x; this.y = y;
                 this.size = Math.random() * 4 + 1;
                 this.speedX = (Math.random() - 0.5) * 10;
@@ -269,13 +281,12 @@
         }
 
         window.addEventListener('mousedown', (e) => {
-            for(let i=0; i<15; i++) particles.push(new Particle(e.clientX, e.clientY, '#00ff66', true));
+            for(let i=0; i<15; i++) particles.push(new Particle(e.clientX, e.clientY, '#00ff66'));
         });
 
-        // Mobile Tap Support
         window.addEventListener('touchstart', (e) => {
             const t = e.touches[0];
-            for(let i=0; i<10; i++) particles.push(new Particle(t.clientX, t.clientY, '#ff3e3e', true));
+            for(let i=0; i<10; i++) particles.push(new Particle(t.clientX, t.clientY, '#ff3e3e'));
         });
 
         function animate() {

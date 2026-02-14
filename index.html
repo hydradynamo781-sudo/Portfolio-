@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Portfolio | Unity & Godot</title>
+    <title>SYSTEM_CORE | Dev Portfolio</title>
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -12,10 +12,60 @@
             --red: #ff3e3e; 
             --green: #00ff66;
             --text: #ffffff;
-            --card-bg: rgba(15, 15, 15, 0.9);
+            --card-bg: rgba(15, 15, 15, 0.95);
         }
 
-        /* --- CRT EFFECT --- */
+        /* BOOT LOADING SCREEN */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 30000;
+            color: var(--green);
+        }
+        .bar-container {
+            width: 250px;
+            height: 4px;
+            background: #222;
+            margin-top: 20px;
+            border: 1px solid var(--green);
+        }
+        #bar { width: 0%; height: 100%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+
+        #mute-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 40000;
+            color: var(--green);
+            border: 1px solid var(--green);
+            padding: 5px 15px;
+            font-size: 12px;
+            background: rgba(0,0,0,0.8);
+            letter-spacing: 2px;
+        }
+
+        #console {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 280px;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--red);
+            font-size: 10px;
+            padding: 10px;
+            color: var(--green);
+            overflow: hidden;
+            z-index: 25000;
+            pointer-events: none;
+            text-transform: uppercase;
+        }
+
         body::before {
             content: " ";
             display: block;
@@ -23,70 +73,32 @@
             top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
                         linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            z-index: 10000;
+            z-index: 28000;
             background-size: 100% 3px, 3px 100%;
             pointer-events: none;
         }
 
-        /* --- HIDE DEFAULT CURSOR --- */
         * { cursor: none !important; }
 
         body {
-            background: linear-gradient(-45deg, #0a0a0a, #1a0505, #051a05, #0a0a0a);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: #000;
             color: var(--text);
             font-family: 'JetBrains Mono', monospace;
             margin: 0;
             overflow-x: hidden;
-            scroll-behavior: smooth;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        #bg-parallax {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #1a0505 0%, #000 100%);
+            z-index: -1;
         }
 
-        /* --- CROSSHAIR STYLE --- */
         #crosshair {
-            width: 30px;
-            height: 30px;
-            border: 2px solid var(--green);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 20000;
-            transform: translate(-50%, -50%);
-            transition: width 0.2s, height 0.2s, border-color 0.2s, transform 0.1s ease-out;
-        }
-        #crosshair::after, #crosshair::before {
-            content: '';
-            position: absolute;
-            background: var(--red);
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        #crosshair::before { width: 10px; height: 2px; }
-        #crosshair::after { width: 2px; height: 10px; }
-
-        .active-reticle #crosshair {
-            border-color: var(--red);
-            width: 45px;
-            height: 45px;
-            animation: rotateReticle 1s linear infinite;
-        }
-
-        @keyframes rotateReticle {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(90deg); }
-        }
-
-        canvas#particleCanvas {
-            position: fixed;
-            top: 0; left: 0;
-            pointer-events: none;
-            z-index: 15000;
+            width: 30px; height: 30px; border: 2px solid var(--green);
+            border-radius: 50%; position: fixed; pointer-events: none;
+            z-index: 35000; transform: translate(-50%, -50%);
         }
 
         section {
@@ -97,6 +109,7 @@
             align-items: center;
             text-align: center;
             padding: 40px 20px;
+            position: relative;
         }
 
         h1 { font-size: clamp(2.5rem, 8vw, 4rem); color: var(--red); letter-spacing: 8px; text-shadow: 0 0 10px var(--red); }
@@ -111,12 +124,12 @@
             text-decoration: none;
             font-weight: 700;
             background: rgba(0,0,0,0.5);
+            transition: 0.3s;
             position: relative;
             z-index: 10002;
         }
         .btn:hover { background: var(--red); color: #000; box-shadow: 0 0 25px var(--red); }
         .btn-green { border-color: var(--green); color: var(--green); }
-        .btn-green:hover { background: var(--green); color: #000; box-shadow: 0 0 25px var(--green); }
 
         .card {
             background: var(--card-bg);
@@ -124,23 +137,28 @@
             border: 1px solid rgba(255, 62, 62, 0.4);
             width: 85%;
             margin-bottom: 20px;
-        }
-
-        @media (min-width: 768px) {
-            .grid { display: flex; gap: 20px; }
-            .card { width: 350px; }
+            transition: 0.3s;
         }
     </style>
 </head>
-<body class="">
+<body>
 
+    <div id="loader">
+        <div id="status">INITIALIZING_SYSTEM_CORES...</div>
+        <div class="bar-container"><div id="bar"></div></div>
+    </div>
+
+    <div id="mute-toggle" class="clickable">SOUND: ON</div>
+    <div id="console"></div>
     <div id="crosshair"></div>
-    <canvas id="particleCanvas"></canvas>
+    <div id="bg-parallax"></div>
+    <canvas id="particleCanvas" style="position:fixed; top:0; left:0; z-index:15000; pointer-events:none;"></canvas>
 
     <section>
         <h1 class="glitch-scroll" data-aos="zoom-out">GAMEDEV_LOG</h1>
+        <p data-aos="fade-up">Hardware: <b>Unity</b> & <b>Godot</b></p>
         <div class="btn-container" data-aos="fade-up" data-aos-delay="400">
-            <a href="#projects" class="btn clickable">INITIALIZE_SYSTEM</a>
+            <a href="#projects" class="btn clickable">GO_TO_PROJECTS</a>
         </div>
     </section>
 
@@ -149,93 +167,119 @@
         <div class="grid">
             <div class="card clickable" data-aos="flip-up">
                 <h3 style="color: var(--red);">Project Alpha</h3>
-                <p>Unity C# Implementation</p>
+                <p>C# Physics Simulation</p>
             </div>
             <div class="card clickable" data-aos="flip-up" data-aos-delay="200">
                 <h3 style="color: var(--green);">Project Beta</h3>
-                <p>Godot GDScript Logic</p>
+                <p>GDScript Shader Work</p>
             </div>
         </div>
     </section>
 
     <section>
-        <h2 class="glitch-scroll">CONNECT_SIGNAL</h2>
-        <a href="https://www.instagram.com/zrathamm?igsh=a2FodjdpcWNyb2Rp" target="_blank" class="btn clickable">Instagram</a>
+        <h2 class="glitch-scroll">CONTACT_SIGNAL</h2>
+        <a href="https://instagram.com/zrathamm" target="_blank" class="btn clickable">IG_LINK</a>
         <br><br>
-        <a href="https://discord.gg/wyhu2kVRJ" target="_blank" class="btn btn-green clickable">Discord</a>
+        <a href="https://discord.gg/wyhu2kVRJ" target="_blank" class="btn btn-green clickable">DISCORD_SERVER</a>
     </section>
 
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
         AOS.init({ duration: 1200 });
 
-        const crosshair = document.getElementById('crosshair');
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+        // --- AUDIO ENGINE ---
+        // 'clickSound' uses your exact filename from GitHub
+        const clickSound = new Audio('683098__florianreichelt__click.mp3');
+        let isMuted = false;
 
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        function playSFX(sound) {
+            if(!isMuted && sound.src) {
+                sound.currentTime = 0;
+                sound.play().catch(e => console.log("Audio waiting for interaction"));
+            }
         }
-        window.addEventListener('resize', resize);
-        resize();
 
-        // --- CROSSHAIR & CLICK LOGIC ---
+        document.getElementById('mute-toggle').addEventListener('click', () => {
+            isMuted = !isMuted;
+            document.getElementById('mute-toggle').innerText = isMuted ? "SOUND: OFF" : "SOUND: ON";
+        });
+
+        // --- BOOT LOADER LOGIC ---
+        let width = 0;
+        const bar = document.getElementById('bar');
+        const status = document.getElementById('status');
+        const loadingInterval = setInterval(() => {
+            width += Math.random() * 10;
+            if (width >= 100) {
+                width = 100;
+                clearInterval(loadingInterval);
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+                addLog("SYSTEM BOOT SUCCESSFUL");
+            }
+            bar.style.width = width + '%';
+        }, 100);
+
+        // --- CONSOLE LOGIC ---
+        const consoleEl = document.getElementById('console');
+        function addLog(msg) {
+            const div = document.createElement('div');
+            div.innerText = `> ${msg}`;
+            consoleEl.appendChild(div);
+            if (consoleEl.childNodes.length > 8) consoleEl.removeChild(consoleEl.childNodes[0]);
+        }
+
+        // --- CROSSHAIR & PARALLAX ---
+        const crosshair = document.getElementById('crosshair');
+        const parallaxBg = document.getElementById('bg-parallax');
+        
         window.addEventListener('mousemove', (e) => {
             crosshair.style.left = e.clientX + 'px';
             crosshair.style.top = e.clientY + 'px';
-            spawnParticles(e.clientX, e.clientY, 1, false); // Trail
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.05;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.05;
+            parallaxBg.style.transform = `translate(${moveX}px, ${moveY}px)`;
         });
 
-        window.addEventListener('mousedown', (e) => {
-            spawnParticles(e.clientX, e.clientY, 15, true); // Explosion
-        });
-
-        // For Mobile Taps
-        window.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            crosshair.style.left = touch.clientX + 'px';
-            crosshair.style.top = touch.clientY + 'px';
-            spawnParticles(touch.clientX, touch.clientY, 15, true);
-        });
-
-        // Hover Effect for Crosshair
+        // --- CLICK EXECUTION ---
         document.querySelectorAll('.clickable').forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('active-reticle'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('active-reticle'));
+            el.addEventListener('click', () => {
+                playSFX(clickSound); // TRIGGER THE SOUND HERE
+                addLog(`EXECUTING: ${el.innerText.slice(0, 15)}`);
+            });
         });
+
+        // --- PARTICLE EXPLOSION ---
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
         class Particle {
-            constructor(x, y, isExplosion) {
-                this.x = x;
-                this.y = y;
-                this.size = isExplosion ? Math.random() * 6 + 2 : Math.random() * 3 + 1;
-                this.speedX = (Math.random() - 0.5) * (isExplosion ? 10 : 2);
-                this.speedY = (Math.random() - 0.5) * (isExplosion ? 10 : 2);
-                this.color = Math.random() > 0.5 ? '#ff3e3e' : '#00ff66';
+            constructor(x, y, color, isBurst) {
+                this.x = x; this.y = y;
+                this.size = Math.random() * 4 + 1;
+                this.speedX = (Math.random() - 0.5) * 10;
+                this.speedY = (Math.random() - 0.5) * 10;
+                this.color = color;
                 this.opacity = 1;
             }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                this.opacity -= 0.02;
-            }
-            draw() {
-                ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = this.color;
-                ctx.fillRect(this.x, this.y, this.size, this.size);
-            }
+            update() { this.x += this.speedX; this.y += this.speedY; this.opacity -= 0.02; }
+            draw() { ctx.globalAlpha = this.opacity; ctx.fillStyle = this.color; ctx.fillRect(this.x, this.y, this.size, this.size); }
         }
 
-        function spawnParticles(x, y, count, isExplosion) {
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle(x, y, isExplosion));
-            }
-        }
+        window.addEventListener('mousedown', (e) => {
+            for(let i=0; i<15; i++) particles.push(new Particle(e.clientX, e.clientY, '#00ff66', true));
+        });
+
+        // Mobile Tap Support
+        window.addEventListener('touchstart', (e) => {
+            const t = e.touches[0];
+            for(let i=0; i<10; i++) particles.push(new Particle(t.clientX, t.clientY, '#ff3e3e', true));
+        });
 
         function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0,0,canvas.width, canvas.height);
             particles = particles.filter(p => p.opacity > 0);
             particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animate);
@@ -248,12 +292,13 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     let iteration = 0;
-                    const originalText = entry.target.innerText;
+                    const original = entry.target.innerText;
                     const interval = setInterval(() => {
-                        entry.target.innerText = originalText.split("").map((l, i) => i < iteration ? originalText[i] : letters[Math.floor(Math.random() * 32)]).join("");
-                        if(iteration >= originalText.length) clearInterval(interval);
+                        entry.target.innerText = original.split("").map((l, i) => i < iteration ? original[i] : letters[Math.floor(Math.random() * 32)]).join("");
+                        if(iteration >= original.length) clearInterval(interval);
                         iteration += 1/3;
                     }, 30);
+                    addLog(`DECRYPTING: ${original}`);
                 }
             });
         }, { threshold: 0.5 });

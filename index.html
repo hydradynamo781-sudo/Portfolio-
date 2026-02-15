@@ -12,7 +12,17 @@
             --card-bg: rgba(20, 20, 20, 0.8);
         }
 
-        /* --- 3D GRID BACKGROUND --- */
+        /* --- ACHIEVEMENT POPUP --- */
+        #achievement {
+            position: fixed; bottom: -100px; right: 20px;
+            background: #111; border: 1px solid var(--green);
+            padding: 15px 25px; border-radius: 15px;
+            display: flex; align-items: center; gap: 15px;
+            transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 200000; box-shadow: 0 0 20px rgba(0,255,102,0.2);
+        }
+        #achievement.show { bottom: 20px; }
+
         #grid-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             perspective: 1000px; z-index: -1; overflow: hidden;
@@ -36,7 +46,6 @@
 
         body { background: #0d0d0d; color: var(--text); font-family: 'JetBrains Mono', monospace; margin: 0; overflow-x: hidden; }
 
-        /* --- LOADER WITH DIAGNOSTICS --- */
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d0d0d; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 60000; color: var(--green); }
         #boot-logs { font-size: 10px; margin-bottom: 15px; height: 60px; overflow: hidden; text-align: left; width: 250px; opacity: 0.8; line-height: 1.5; }
         .bar-container { width: 250px; height: 4px; background: #222; border-radius: 10px; border: 1px solid var(--green); position: relative; }
@@ -86,6 +95,14 @@
         <div class="bar-container"><div id="bar"></div></div>
     </div>
 
+    <div id="achievement">
+        <div id="ach-icon" style="font-size: 24px;">🏆</div>
+        <div>
+            <div id="ach-title" style="color: var(--green); font-weight: bold; font-size: 12px;">SYSTEM_ADAPTED</div>
+            <div id="ach-desc" style="font-size: 10px; color: #888;">Stayed online for 20+ cycles.</div>
+        </div>
+    </div>
+
     <div id="modal-overlay">
         <div class="modal-content">
             <h2 id="modal-title" style="color: var(--green);">DATA_NODE</h2>
@@ -110,17 +127,17 @@
     </section>
 
     <section id="experience">
-        <h2 style="color: var(--green); letter-spacing: 5px; border-bottom: 2px solid var(--red); padding-bottom: 10px;">EXPERIENCE_LOG</h2>
+        <h2 style="color: var(--green); letter-spacing: 5px; border-bottom: 1px solid var(--red); padding-bottom: 10px;">EXPERIENCE_LOG</h2>
         <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-            <div class="card" onclick="openModal('ANIMATION_BLENDER', '3D Modeling & Rigging Pipeline.', 75)">
+            <div class="card" onclick="openModal('ANIMATION_BLENDER', '3D Modeling & Rigging Pipeline.', 75, 'blender')">
                 <h3 style="color: var(--red);">ANIMATION_BLENDER</h3>
                 <p>Asset Pipeline</p>
             </div>
-            <div class="card" onclick="openModal('CODING_JS', 'High-Level Logic Architecture.', 90)">
+            <div class="card" onclick="openModal('CODING_JS', 'High-Level Logic Architecture.', 90, 'js')">
                 <h3 style="color: var(--green);">CODING_JS</h3>
                 <p>High-Level Logic</p>
             </div>
-            <div class="card" onclick="openModal('C++_CORE', 'Engine Level Systems implementation.', 80)">
+            <div class="card" onclick="openModal('C++_CORE', 'Engine Level Systems implementation.', 80, 'cpp')">
                 <h3 style="color: var(--red);">C++_CORE</h3>
                 <p>System Level</p>
             </div>
@@ -128,7 +145,7 @@
     </section>
 
     <section>
-        <h2 style="color: var(--green); letter-spacing: 5px; border-bottom: 2px solid var(--red); padding-bottom: 10px;">CONTACT_SIGNAL</h2>
+        <h2 style="color: var(--green); letter-spacing: 5px; border-bottom: 1px solid var(--red); padding-bottom: 10px;">CONTACT_SIGNAL</h2>
         <a href="https://instagram.com/zrathamm" target="_blank" class="contact-btn red-btn">INSTAGRAM_SIGNAL</a>
         <a href="https://discord.gg/wyhu2kVRJ" target="_blank" class="contact-btn">DISCORD_SERVER</a>
     </section>
@@ -141,13 +158,23 @@
         ambientMusic.loop = true; ambientMusic.volume = 0.25;
 
         let mouseX = 0, mouseY = 0, isMouseDown = false;
+        let achs = { timer: false, explored: { blender: false, js: false, cpp: false }, master: false };
 
-        // --- RESTORED SOUND ON EVERY CLICK ---
+        function showAchievement(title, desc, icon = "🏆") {
+            document.getElementById('ach-title').innerText = title;
+            document.getElementById('ach-desc').innerText = desc;
+            document.getElementById('ach-icon').innerText = icon;
+            document.getElementById('achievement').classList.add('show');
+            clickSound.play();
+            addLog(`ACHIEVEMENT_UNLOCKED: ${title}`);
+            setTimeout(() => document.getElementById('achievement').classList.remove('show'), 5000);
+        }
+
         window.addEventListener('mousedown', (e) => { 
             isMouseDown = true; 
             clickSound.currentTime = 0;
             clickSound.play().catch(() => {}); 
-            addLog(`CLICK_DETECTED: X:${Math.round(e.clientX)} Y:${Math.round(e.clientY)}`);
+            addLog(`CLICK_X:${Math.round(e.clientX)} Y:${Math.round(e.clientY)}`);
             for(let i=0; i<8; i++) particles.push(new Particle(e.clientX, e.clientY));
         });
         window.addEventListener('mouseup', () => isMouseDown = false);
@@ -167,13 +194,14 @@
             if(document.getElementById('log-content').childNodes.length > 8) document.getElementById('log-content').removeChild(document.getElementById('log-content').firstChild);
         }
 
-        function openModal(title, desc, mastery) {
+        function openModal(title, desc, mastery, key) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-desc').innerText = desc;
             document.getElementById('modal-overlay').style.display = 'flex';
             const fill = document.getElementById('skill-fill');
             const pText = document.getElementById('skill-percent');
             fill.style.width = '0%'; pText.innerText = `MASTERY: 0%`;
+            
             setTimeout(() => { 
                 fill.style.width = mastery + '%';
                 let c = 0; let interval = setInterval(() => {
@@ -181,10 +209,18 @@
                     else { c++; pText.innerText = `MASTERY: ${c}%`; }
                 }, 20);
             }, 400);
+
+            // Achievement logic
+            if(key) {
+                achs.explored[key] = true;
+                if (achs.explored.blender && achs.explored.js && achs.explored.cpp && !achs.master) {
+                    setTimeout(() => showAchievement("MASTER_EXPLORER", "Accessed all data nodes.", "💾"), 1000);
+                    achs.master = true;
+                }
+            }
         }
         function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
 
-        // --- PARTICLES ---
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -211,7 +247,6 @@
         }
         animate();
 
-        // --- TYPEWRITER ---
         function startTypewriter() {
             let t = "GAMEDEV_LOG", c = 0;
             let i = setInterval(() => {
@@ -220,7 +255,6 @@
             }, 150);
         }
 
-        // --- RESTORED BOOT LOGIC WITH DIAGNOSTICS ---
         const bootMessages = ["WAKING_CORE...", "MOUNTING_DRIVES...", "SCANNED_SECTORS... OK", "LINKING_IG_SIGNAL...", "LINKING_DISC_SIGNAL...", "UI_READY"];
         let w = 0, msgIdx = 0;
         let l = setInterval(() => {
@@ -242,8 +276,15 @@
         }, 120);
 
         setInterval(() => {
-            document.getElementById('uptime').innerText = Math.floor((Date.now() - startTime) / 1000);
+            let uptime = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('uptime').innerText = uptime;
             document.getElementById('temp-val').innerText = 34 + Math.floor(Math.random() * 3);
+            
+            // Time achievement
+            if (uptime >= 20 && !achs.timer) {
+                showAchievement("SYSTEM_ADAPTED", "Stayed online for 20+ cycles.");
+                achs.timer = true;
+            }
         }, 1000);
         let startTime = Date.now();
     </script>

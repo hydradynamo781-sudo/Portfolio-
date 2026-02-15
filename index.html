@@ -12,34 +12,34 @@
             --card-bg: rgba(20, 20, 20, 0.8);
         }
 
-        /* --- CRT NOISE --- */
+        /* --- 3D GRID BACKGROUND --- */
+        #grid-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            perspective: 1000px; z-index: -1; overflow: hidden;
+        }
+        #grid-bg {
+            width: 200%; height: 200%; top: -50%; left: -50%; position: absolute;
+            background-image: linear-gradient(rgba(0, 255, 102, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 255, 102, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px; transform: rotateX(60deg);
+            transition: transform 0.1s ease-out;
+        }
+
         .noise-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             opacity: 0.05; z-index: 100002; pointer-events: none;
         }
 
-        /* --- FIXED 0.5s GLITCH SYSTEM --- */
-        .glitch-active { 
-            filter: hue-rotate(90deg) contrast(150%) brightness(1.2); 
-            animation: glitch-shake 0.1s infinite; 
-        }
-        @keyframes glitch-shake {
-            0% { clip-path: inset(10% 0 30% 0); transform: translate(-5px, 5px); }
-            50% { clip-path: inset(30% 0 10% 0); transform: translate(5px, -5px); }
-            100% { clip-path: inset(0); transform: translate(0); }
-        }
-
         #hud { position: fixed; top: 10px; left: 10px; z-index: 100001; font-size: 10px; color: var(--green); pointer-events: none; }
         #reboot-trigger { position: fixed; top: 10px; right: 10px; z-index: 100001; font-size: 10px; color: var(--red); border: 1px solid var(--red); padding: 5px; border-radius: 5px; background: rgba(255,0,0,0.1); cursor: pointer; }
 
-        body {
-            background: #0d0d0d; color: var(--text); font-family: 'JetBrains Mono', monospace; 
-            margin: 0; overflow-x: hidden;
-        }
+        body { background: #0d0d0d; color: var(--text); font-family: 'JetBrains Mono', monospace; margin: 0; overflow-x: hidden; }
 
+        /* --- LOADER WITH DIAGNOSTICS --- */
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0d0d0d; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 60000; color: var(--green); }
-        .bar-container { width: 250px; height: 4px; background: #222; margin-top: 20px; border-radius: 10px; border: 1px solid var(--green); }
+        #boot-logs { font-size: 10px; margin-bottom: 15px; height: 60px; overflow: hidden; text-align: left; width: 250px; opacity: 0.8; line-height: 1.5; }
+        .bar-container { width: 250px; height: 4px; background: #222; border-radius: 10px; border: 1px solid var(--green); position: relative; }
         #bar { width: 0%; height: 100%; background: var(--green); box-shadow: 0 0 10px var(--green); border-radius: 10px; }
 
         #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 50000; backdrop-filter: blur(10px); }
@@ -48,12 +48,12 @@
 
         #console { 
             position: fixed; bottom: 20px; left: 20px; width: 280px; height: 100px; 
-            background: rgba(0,0,0,0.6); border: 1px solid rgba(0,255,102,0.3); 
+            background: rgba(0,0,0,0.8); border: 1px solid rgba(0,255,102,0.3); 
             border-radius: 15px; font-size: 10px; padding: 12px; color: var(--green); 
-            overflow: hidden; z-index: 25000; pointer-events: none;
+            transition: all 0.4s; cursor: pointer; z-index: 25000; pointer-events: auto; overflow: hidden;
         }
-        
-        section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 20px; }
+
+        section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 20px; position: relative; }
         
         .contact-btn { 
             display: inline-block; width: 250px; padding: 15px; margin: 10px;
@@ -63,22 +63,26 @@
         }
         .contact-btn:hover { background: var(--green); color: black; box-shadow: 0 0 20px var(--green); }
         .red-btn { border-color: var(--red); color: var(--red); background: rgba(255, 62, 62, 0.05); }
-        .red-btn:hover { background: var(--red); color: white; }
 
-        .card { background: var(--card-bg); padding: 30px; border-radius: 20px; margin: 10px; border: 1px solid rgba(255,255,255,0.1); width: 280px; transition: 0.3s; }
+        .card { background: var(--card-bg); padding: 30px; border-radius: 20px; margin: 10px; border: 1px solid rgba(255,255,255,0.1); width: 280px; transition: 0.3s; cursor: pointer; }
         .card:hover { border-color: var(--green); transform: translateY(-5px); }
         
-        * { cursor: crosshair; }
+        #crosshair { width: 20px; height: 20px; border: 1px solid var(--green); border-radius: 50%; position: fixed; pointer-events: none; z-index: 100005; transform: translate(-50%, -50%); }
+
+        * { cursor: none !important; }
     </style>
 </head>
 <body onload="startTypewriter()">
 
+    <div id="grid-container"><div id="grid-bg"></div></div>
     <div class="noise-overlay"></div>
-    <div id="hud">CORE_TEMP: <span id="temp-val">34</span>°C | UPTIME: <span id="uptime">0</span>s</div>
+    <div id="crosshair"></div>
+    
+    <div id="hud">CORE_TEMP: <span id="temp-val">34</span>°C | UPTIME: <span id="uptime">0</span>s | STATUS: STABLE</div>
     <button id="reboot-trigger" onclick="location.reload()">REBOOT_SYS</button>
 
     <div id="loader">
-        <div id="status">WAKING_CORE_SYSTEMS...</div>
+        <div id="boot-logs"></div>
         <div class="bar-container"><div id="bar"></div></div>
     </div>
 
@@ -93,7 +97,10 @@
         </div>
     </div>
 
-    <div id="console"></div>
+    <div id="console" onclick="this.style.height = (this.style.height === '300px' ? '100px' : '300px')">
+        <div id="log-content">> SYSTEM_READY</div>
+    </div>
+    
     <canvas id="particleCanvas" style="position:fixed; top:0; left:0; z-index:15000; pointer-events:none;"></canvas>
 
     <section>
@@ -103,95 +110,78 @@
     </section>
 
     <section id="experience">
-        <h2 style="color: var(--green); letter-spacing: 5px;">EXPERIENCE_LOG</h2>
+        <h2 style="color: var(--green); letter-spacing: 5px; border-bottom: 2px solid var(--red); padding-bottom: 10px;">EXPERIENCE_LOG</h2>
         <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-            <div class="card" onclick="openModal('ANIMATION_BLENDER', '3D Modeling & Rigging Asset Pipeline.', 75)">
+            <div class="card" onclick="openModal('ANIMATION_BLENDER', '3D Modeling & Rigging Pipeline.', 75)">
                 <h3 style="color: var(--red);">ANIMATION_BLENDER</h3>
                 <p>Asset Pipeline</p>
             </div>
-            <div class="card" onclick="openModal('CODING_JS', 'Web Logic & UI Systems Architect.', 90)">
+            <div class="card" onclick="openModal('CODING_JS', 'High-Level Logic Architecture.', 90)">
                 <h3 style="color: var(--green);">CODING_JS</h3>
                 <p>High-Level Logic</p>
             </div>
-            <div class="card" onclick="openModal('C++_CORE', 'Low-level systems and Engine architecture.', 80)">
+            <div class="card" onclick="openModal('C++_CORE', 'Engine Level Systems implementation.', 80)">
                 <h3 style="color: var(--red);">C++_CORE</h3>
-                <p>System Implementation</p>
+                <p>System Level</p>
             </div>
         </div>
     </section>
 
     <section>
-        <h2 style="color: var(--green); letter-spacing: 5px;">CONTACT_SIGNAL</h2>
+        <h2 style="color: var(--green); letter-spacing: 5px; border-bottom: 2px solid var(--red); padding-bottom: 10px;">CONTACT_SIGNAL</h2>
         <a href="https://instagram.com/zrathamm" target="_blank" class="contact-btn red-btn">INSTAGRAM_SIGNAL</a>
         <a href="https://discord.gg/wyhu2kVRJ" target="_blank" class="contact-btn">DISCORD_SERVER</a>
     </section>
 
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
-        AOS.init({ duration: 1000 });
-
+        AOS.init();
         const clickSound = new Audio('https://raw.githubusercontent.com/hydradynamo781-sudo/Portfolio-/main/683098__florianreichelt__click.mp3');
         const ambientMusic = new Audio('https://raw.githubusercontent.com/hydradynamo781-sudo/Portfolio-/raw/refs/heads/main/freemusicforvideo-dark-ambient-soundscape-dreamscape-462864.mp3'); 
         ambientMusic.loop = true; ambientMusic.volume = 0.25;
 
-        // --- GLITCH CLEARING AT 0.5s ---
-        function triggerSystemGlitch() {
-            document.body.classList.add('glitch-active');
-            addLog("SIGNAL_INTERFERENCE_DETECTED");
-            setTimeout(() => { document.body.classList.remove('glitch-active'); }, 500);
-        }
+        let mouseX = 0, mouseY = 0, isMouseDown = false;
 
-        // --- CONSOLE LOGGING (RE-LINKED TO EVERY CLICK) ---
+        // --- RESTORED SOUND ON EVERY CLICK ---
         window.addEventListener('mousedown', (e) => { 
-            clickSound.play();
-            addLog(`INPUT_DETECTED: X:${e.clientX} Y:${e.clientY}`);
+            isMouseDown = true; 
+            clickSound.currentTime = 0;
+            clickSound.play().catch(() => {}); 
+            addLog(`CLICK_DETECTED: X:${Math.round(e.clientX)} Y:${Math.round(e.clientY)}`);
             for(let i=0; i<8; i++) particles.push(new Particle(e.clientX, e.clientY));
+        });
+        window.addEventListener('mouseup', () => isMouseDown = false);
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            document.getElementById('crosshair').style.left = mouseX + 'px';
+            document.getElementById('crosshair').style.top = mouseY + 'px';
+            const xRot = (mouseY / window.innerHeight - 0.5) * 20;
+            const yRot = (mouseX / window.innerWidth - 0.5) * -20;
+            document.getElementById('grid-bg').style.transform = `rotateX(${60 + xRot}deg) rotateY(${yRot}deg)`;
         });
 
         function addLog(msg) {
-            const consoleBox = document.getElementById('console');
-            const div = document.createElement('div');
-            div.innerText = `> ${msg}`;
-            consoleBox.appendChild(div);
-            if (consoleBox.childNodes.length > 5) consoleBox.removeChild(consoleBox.firstChild);
-        }
-
-        let startTime = Date.now();
-        setInterval(() => {
-            document.getElementById('uptime').innerText = Math.floor((Date.now() - startTime) / 1000);
-            document.getElementById('temp-val').innerText = 34 + Math.floor(Math.random() * 4);
-        }, 1000);
-
-        function startTypewriter() {
-            let t = "GAMEDEV_LOG", c = 0;
-            let i = setInterval(() => {
-                document.getElementById('typewriter-h1').innerText += t[c];
-                c++; if(c >= t.length) clearInterval(i);
-            }, 100);
+            const div = document.createElement('div'); div.innerText = `> ${msg}`;
+            document.getElementById('log-content').appendChild(div);
+            if(document.getElementById('log-content').childNodes.length > 8) document.getElementById('log-content').removeChild(document.getElementById('log-content').firstChild);
         }
 
         function openModal(title, desc, mastery) {
-            triggerSystemGlitch();
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-desc').innerText = desc;
             document.getElementById('modal-overlay').style.display = 'flex';
-            
             const fill = document.getElementById('skill-fill');
-            const percentText = document.getElementById('skill-percent');
-            
-            fill.style.width = '0%';
-            percentText.innerText = `MASTERY: 0%`;
-
+            const pText = document.getElementById('skill-percent');
+            fill.style.width = '0%'; pText.innerText = `MASTERY: 0%`;
             setTimeout(() => { 
                 fill.style.width = mastery + '%';
-                let count = 0;
-                let counter = setInterval(() => {
-                    if (count >= mastery) clearInterval(counter);
-                    else { count++; percentText.innerText = `MASTERY: ${count}%`; }
+                let c = 0; let interval = setInterval(() => {
+                    if (c >= mastery) clearInterval(interval);
+                    else { c++; pText.innerText = `MASTERY: ${c}%`; }
                 }, 20);
             }, 400);
         }
-
         function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
 
         // --- PARTICLES ---
@@ -202,15 +192,15 @@
 
         class Particle {
             constructor(x, y) {
-                this.x = x; this.y = y; this.size = Math.random() * 2 + 1;
+                this.x = x; this.y = y;
                 this.speedX = (Math.random() - 0.5) * 8; this.speedY = (Math.random() - 0.5) * 8;
                 this.opacity = 1;
             }
-            update() { this.x += this.speedX; this.y += this.speedY; this.opacity -= 0.02; }
-            draw() {
-                ctx.globalAlpha = this.opacity; ctx.fillStyle = '#00ff66';
-                ctx.fillRect(this.x, this.y, this.size, this.size);
+            update() {
+                if(isMouseDown) { this.speedX += (mouseX - this.x) * 0.02; this.speedY += (mouseY - this.y) * 0.02; }
+                this.x += this.speedX; this.y += this.speedY; this.opacity -= 0.02;
             }
+            draw() { ctx.globalAlpha = this.opacity; ctx.fillStyle = '#00ff66'; ctx.fillRect(this.x, this.y, 2, 2); }
         }
 
         function animate() {
@@ -221,20 +211,41 @@
         }
         animate();
 
-        // --- LOADER ---
-        let w = 0;
+        // --- TYPEWRITER ---
+        function startTypewriter() {
+            let t = "GAMEDEV_LOG", c = 0;
+            let i = setInterval(() => {
+                document.getElementById('typewriter-h1').innerText += t[c];
+                c++; if(c >= t.length) clearInterval(i);
+            }, 150);
+        }
+
+        // --- RESTORED BOOT LOGIC WITH DIAGNOSTICS ---
+        const bootMessages = ["WAKING_CORE...", "MOUNTING_DRIVES...", "SCANNED_SECTORS... OK", "LINKING_IG_SIGNAL...", "LINKING_DISC_SIGNAL...", "UI_READY"];
+        let w = 0, msgIdx = 0;
         let l = setInterval(() => {
-            w += Math.random() * 15;
+            w += Math.random() * 12;
+            if (w % 20 < 10 && msgIdx < bootMessages.length) {
+                const p = document.createElement('div');
+                p.innerText = `> ${bootMessages[msgIdx]}`;
+                document.getElementById('boot-logs').appendChild(p);
+                msgIdx++;
+            }
             if (w >= 100) {
                 w = 100; clearInterval(l);
                 setTimeout(() => { 
                     document.getElementById('loader').style.display = 'none'; 
                     ambientMusic.play().catch(() => {});
                 }, 500);
-                addLog("SYSTEM_BOOT_SUCCESSFUL");
             }
             document.getElementById('bar').style.width = w + '%';
-        }, 80);
+        }, 120);
+
+        setInterval(() => {
+            document.getElementById('uptime').innerText = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('temp-val').innerText = 34 + Math.floor(Math.random() * 3);
+        }, 1000);
+        let startTime = Date.now();
     </script>
 </body>
 </html>

@@ -8,170 +8,115 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0a0a;
+            --bg: #121212;
             --red: #ff3e3e; 
             --green: #00ff66;
             --text: #ffffff;
-            --card-bg: rgba(15, 15, 15, 0.95);
+            --card-bg: rgba(30, 30, 30, 0.5); 
         }
 
-        /* BOOT LOADING SCREEN */
-        #loader {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 30000;
-            color: var(--green);
-        }
-        .bar-container {
-            width: 250px;
-            height: 4px;
-            background: #222;
-            margin-top: 20px;
-            border: 1px solid var(--green);
-        }
-        #bar { width: 0%; height: 100%; background: var(--green); box-shadow: 0 0 10px var(--green); }
-
-        #mute-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 40000;
-            color: var(--green);
-            border: 1px solid var(--green);
-            padding: 5px 15px;
-            font-size: 12px;
-            background: rgba(0,0,0,0.8);
-            letter-spacing: 2px;
-        }
-
-        #console {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 280px;
-            height: 120px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid var(--red);
-            font-size: 10px;
-            padding: 10px;
-            color: var(--green);
-            overflow: hidden;
-            z-index: 25000;
-            pointer-events: none;
-            text-transform: uppercase;
-        }
-
-        body::before {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            z-index: 28000;
-            background-size: 100% 3px, 3px 100%;
-            pointer-events: none;
-        }
-
-        * { cursor: none !important; }
-
+        /* --- HIGH-SPEED CALM BACKGROUND --- */
         body {
-            background: #000;
+            background: linear-gradient(-45deg, #0d0d0d, #1e3a34, #1e1e3e, #121212);
+            background-size: 400% 400%;
+            animation: gradientShift 6s ease infinite; 
             color: var(--text);
             font-family: 'JetBrains Mono', monospace;
             margin: 0;
             overflow-x: hidden;
         }
 
-        #bg-parallax {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #1a0505 0%, #000 100%);
-            z-index: -1;
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- UI ELEMENTS & CURVES --- */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0d0d0d; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 60000; color: var(--green);
+        }
+        .bar-container { width: 250px; height: 4px; background: #222; margin-top: 20px; border-radius: 10px; border: 1px solid var(--green); }
+        #bar { width: 0%; height: 100%; background: var(--green); box-shadow: 0 0 10px var(--green); border-radius: 10px; transition: width 0.2s; }
+
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none;
+            justify-content: center; align-items: center; z-index: 50000;
+            backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background: #0d0d0d; border: 2px solid var(--green);
+            padding: 30px; border-radius: 20px; width: 80%;
+            max-width: 500px; text-align: left;
+        }
+
+        #console {
+            position: fixed; bottom: 20px; left: 20px;
+            width: 280px; height: 120px;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 102, 0.2); border-radius: 20px;
+            font-size: 10px; padding: 12px; color: var(--green); overflow: hidden;
+            z-index: 25000; pointer-events: none;
         }
 
         #crosshair {
-            width: 30px; height: 30px; border: 2px solid var(--green);
+            width: 32px; height: 32px; border: 2px solid var(--green);
             border-radius: 50%; position: fixed; pointer-events: none;
             z-index: 35000; transform: translate(-50%, -50%);
         }
 
-        section {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px 20px;
-            position: relative;
-        }
+        section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; }
+        .btn { display: inline-block; padding: 15px 30px; border: 2px solid var(--red); color: var(--red); text-decoration: none; border-radius: 15px; background: rgba(0,0,0,0.2); transition: 0.4s; }
+        .btn:hover { background: var(--red); color: #000; transform: scale(1.05); }
 
-        h1 { font-size: clamp(2.5rem, 8vw, 4rem); color: var(--red); letter-spacing: 8px; text-shadow: 0 0 10px var(--red); }
-        h2 { margin-bottom: 30px; letter-spacing: 4px; color: var(--green); border-bottom: 2px solid var(--red); }
-
-        .btn {
-            display: inline-block;
-            min-width: 240px;
-            padding: 15px 30px;
-            border: 2px solid var(--red);
-            color: var(--red);
-            text-decoration: none;
-            font-weight: 700;
-            background: rgba(0,0,0,0.5);
-            transition: 0.3s;
-            position: relative;
-            z-index: 10002;
+        .card { 
+            background: var(--card-bg); backdrop-filter: blur(15px); padding: 40px; 
+            border-radius: 30px; margin-bottom: 25px; transition: 0.4s; 
+            border: 1px solid rgba(255,255,255,0.1); 
         }
-        .btn:hover { background: var(--red); color: #000; box-shadow: 0 0 25px var(--red); }
-        .btn-green { border-color: var(--green); color: var(--green); }
+        .card:hover { border-color: var(--green); transform: translateY(-5px); }
 
-        .card {
-            background: var(--card-bg);
-            padding: 40px;
-            border: 1px solid rgba(255, 62, 62, 0.4);
-            width: 85%;
-            margin-bottom: 20px;
-            transition: 0.3s;
-        }
+        * { cursor: none !important; }
     </style>
 </head>
-<body>
+<body onload="startTypewriter()">
 
     <div id="loader">
-        <div id="status">INITIALIZING_SYSTEM_CORES...</div>
+        <div id="status">WAKING_CORE_SYSTEMS...</div>
         <div class="bar-container"><div id="bar"></div></div>
     </div>
 
-    <div id="mute-toggle" class="clickable">SOUND: ON</div>
+    <div id="modal-overlay">
+        <div class="modal-content">
+            <h2 id="modal-title" style="color: var(--green);">DATA_NODE</h2>
+            <p id="modal-desc" style="line-height: 1.6;">Accessing encrypted archives...</p>
+            <button class="btn" style="border-color: var(--green); color: var(--green);" onclick="closeModal()">CLOSE_SESSION</button>
+        </div>
+    </div>
+
     <div id="console"></div>
     <div id="crosshair"></div>
-    <div id="bg-parallax"></div>
     <canvas id="particleCanvas" style="position:fixed; top:0; left:0; z-index:15000; pointer-events:none;"></canvas>
 
     <section>
-        <h1 class="glitch-scroll" data-aos="zoom-out">GAMEDEV_LOG</h1>
-        <p data-aos="fade-up">Hardware: <b>Unity</b> & <b>Godot</b></p>
-        <div class="btn-container" data-aos="fade-up" data-aos-delay="400">
-            <a href="#projects" class="btn clickable">GO_TO_PROJECTS</a>
-        </div>
+        <h1 id="typewriter-h1" style="color: var(--red); font-size: clamp(2rem, 8vw, 4rem); letter-spacing: 8px;"></h1>
+        <p data-aos="fade-up">Platform: <b>Unity</b> & <b>Godot</b></p>
+        <a href="#projects" class="btn clickable">GO_TO_PROJECTS</a>
     </section>
 
     <section id="projects">
         <h2 class="glitch-scroll">ACTIVE_BUILDS</h2>
-        <div class="grid">
-            <div class="card clickable" data-aos="flip-up">
+        <div class="grid" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+            <div class="card clickable" onclick="openModal('VIRTUAL_REALM', 'Unity C# project featuring custom physics and real-time lighting shaders.')">
                 <h3 style="color: var(--red);">VIRTUAL_REALM</h3>
-                <p>Unity C# Implementation</p>
+                <p>Architecture Log</p>
             </div>
-            <div class="card clickable" data-aos="flip-up" data-aos-delay="200">
+            <div class="card clickable" onclick="openModal('NEURAL_ENGINE', 'Tactical AI logic and neural-pathfinding built entirely in GDScript.')">
                 <h3 style="color: var(--green);">NEURAL_ENGINE</h3>
-                <p>Godot GDScript Logic</p>
+                <p>Logic Log</p>
             </div>
         </div>
     </section>
@@ -180,87 +125,101 @@
         <h2 class="glitch-scroll">CONTACT_SIGNAL</h2>
         <a href="https://instagram.com/zrathamm" target="_blank" class="btn clickable">IG_LINK</a>
         <br><br>
-        <a href="https://discord.gg/wyhu2kVRJ" target="_blank" class="btn btn-green clickable">DISCORD_SERVER</a>
+        <a href="https://discord.gg/wyhu2kVRJ" target="_blank" class="btn clickable" style="border-color: var(--green); color: var(--green); border-radius: 15px;">DISCORD_SERVER</a>
     </section>
 
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
         AOS.init({ duration: 1200 });
 
-        // --- AUDIO ENGINE (FIXED FOR MOBILE CHROME) ---
+        // --- AUDIO ENGINE ---
         const clickSound = new Audio('https://raw.githubusercontent.com/hydradynamo781-sudo/Portfolio-/main/683098__florianreichelt__click.mp3');
-        let isMuted = false;
+        
+        // PASTE YOUR RAW MUSIC LINK HERE:
+        const ambientMusic = new Audio('https://github.com/hydradynamo781-sudo/Portfolio-/raw/refs/heads/main/freemusicforvideo-dark-ambient-soundscape-dreamscape-462864.mp3'); 
+        ambientMusic.loop = true;
+        ambientMusic.volume = 0.25;
+
         let audioUnlocked = false;
 
         function playSFX(sound) {
-            if(!isMuted && sound.src) {
-                sound.currentTime = 0;
-                let playPromise = sound.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(e => console.log("Audio waiting for first touch..."));
-                }
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
+
+        // --- TYPEWRITER ---
+        const textToType = "GAMEDEV_LOG";
+        let charIndex = 0;
+        function startTypewriter() {
+            if (charIndex < textToType.length) {
+                document.getElementById("typewriter-h1").innerHTML += textToType.charAt(charIndex);
+                charIndex++;
+                setTimeout(startTypewriter, 150);
             }
         }
 
-        // UNLOCK AUDIO ON FIRST TAP
+        // --- MODALS ---
+        function openModal(title, desc) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('modal-overlay').style.display = 'flex';
+            playSFX(clickSound);
+            addLog(`OPENING_NODE: ${title}`);
+        }
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+            playSFX(clickSound);
+        }
+
+        // --- BOOT LOADER & AUTO-PLAY ATTEMPT ---
+        let width = 0;
+        const bar = document.getElementById('bar');
+        const loadingInterval = setInterval(() => {
+            width += Math.random() * 8;
+            if (width >= 100) {
+                width = 100;
+                clearInterval(loadingInterval);
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    // Attempt Auto-Play
+                    ambientMusic.play().then(() => {
+                        audioUnlocked = true;
+                        addLog("AUDIO_START: SUCCESS");
+                    }).catch(() => {
+                        addLog("AUDIO_START: WAITING_FOR_USER");
+                    });
+                }, 600);
+                addLog("SYSTEM_BOOT_SUCCESSFUL");
+            }
+            bar.style.width = width + '%';
+        }, 120);
+
+        // --- FALLBACK UNLOCK ---
         window.addEventListener('touchstart', () => {
             if(!audioUnlocked) {
                 clickSound.load();
+                ambientMusic.play();
                 audioUnlocked = true;
                 addLog("AUDIO_SYSTEM: ONLINE");
             }
         }, {once: true});
 
-        document.getElementById('mute-toggle').addEventListener('click', () => {
-            isMuted = !isMuted;
-            document.getElementById('mute-toggle').innerText = isMuted ? "SOUND: OFF" : "SOUND: ON";
-        });
-
-        // --- BOOT LOADER LOGIC ---
-        let width = 0;
-        const bar = document.getElementById('bar');
-        const status = document.getElementById('status');
-        const loadingInterval = setInterval(() => {
-            width += Math.random() * 10;
-            if (width >= 100) {
-                width = 100;
-                clearInterval(loadingInterval);
-                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
-                addLog("SYSTEM BOOT SUCCESSFUL");
-            }
-            bar.style.width = width + '%';
-        }, 100);
-
-        // --- CONSOLE LOGIC ---
         const consoleEl = document.getElementById('console');
         function addLog(msg) {
             const div = document.createElement('div');
             div.innerText = `> ${msg}`;
             consoleEl.appendChild(div);
-            if (consoleEl.childNodes.length > 8) consoleEl.removeChild(consoleEl.childNodes[0]);
+            if (consoleEl.childNodes.length > 7) consoleEl.removeChild(consoleEl.childNodes[0]);
         }
 
-        // --- CROSSHAIR & PARALLAX ---
         const crosshair = document.getElementById('crosshair');
-        const parallaxBg = document.getElementById('bg-parallax');
-        
         window.addEventListener('mousemove', (e) => {
             crosshair.style.left = e.clientX + 'px';
             crosshair.style.top = e.clientY + 'px';
-            const moveX = (e.clientX - window.innerWidth / 2) * 0.05;
-            const moveY = (e.clientY - window.innerHeight / 2) * 0.05;
-            parallaxBg.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            if(Math.random() > 0.85) particles.push(new Particle(e.clientX, e.clientY, '#00ff66', 0.2));
         });
 
-        // --- CLICK EXECUTION ---
-        document.querySelectorAll('.clickable').forEach(el => {
-            el.addEventListener('click', () => {
-                playSFX(clickSound); 
-                addLog(`EXECUTING: ${el.innerText.slice(0, 15)}`);
-            });
-        });
-
-        // --- PARTICLE EXPLOSION ---
+        // --- PARTICLES ---
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -268,11 +227,11 @@
         canvas.height = window.innerHeight;
 
         class Particle {
-            constructor(x, y, color) {
+            constructor(x, y, color, speedMult = 1) {
                 this.x = x; this.y = y;
-                this.size = Math.random() * 4 + 1;
-                this.speedX = (Math.random() - 0.5) * 10;
-                this.speedY = (Math.random() - 0.5) * 10;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 12 * speedMult;
+                this.speedY = (Math.random() - 0.5) * 12 * speedMult;
                 this.color = color;
                 this.opacity = 1;
             }
@@ -281,12 +240,8 @@
         }
 
         window.addEventListener('mousedown', (e) => {
-            for(let i=0; i<15; i++) particles.push(new Particle(e.clientX, e.clientY, '#00ff66'));
-        });
-
-        window.addEventListener('touchstart', (e) => {
-            const t = e.touches[0];
-            for(let i=0; i<10; i++) particles.push(new Particle(t.clientX, t.clientY, '#ff3e3e'));
+            playSFX(clickSound);
+            for(let i=0; i<15; i++) particles.push(new Particle(e.clientX, e.clientY, '#00ff66', 1));
         });
 
         function animate() {
@@ -296,24 +251,6 @@
             requestAnimationFrame(animate);
         }
         animate();
-
-        // --- GLITCH SCROLL ---
-        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#%&*@$";
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    let iteration = 0;
-                    const original = entry.target.innerText;
-                    const interval = setInterval(() => {
-                        entry.target.innerText = original.split("").map((l, i) => i < iteration ? original[i] : letters[Math.floor(Math.random() * 32)]).join("");
-                        if(iteration >= original.length) clearInterval(interval);
-                        iteration += 1/3;
-                    }, 30);
-                    addLog(`DECRYPTING: ${original}`);
-                }
-            });
-        }, { threshold: 0.5 });
-        document.querySelectorAll('.glitch-scroll').forEach(el => observer.observe(el));
     </script>
 </body>
 </html>
